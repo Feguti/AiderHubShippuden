@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using System.Web;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using AiderHubAtual.Models;
@@ -19,13 +18,11 @@ namespace AiderHubAtual.Controllers
             _context = context;
         }
 
-        //// GET: Eventos
+        // GET: Eventos
         public async Task<IActionResult> Index()
         {
             return View(await _context.Eventos.ToListAsync());
         }
-
-        //public IActionResult Index() => View(_context.Eventos);
 
         // GET: Eventos/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -56,7 +53,7 @@ namespace AiderHubAtual.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("id_Evento,Endereco,Descricao,Responsavel")] Evento evento)
+        public async Task<IActionResult> Create([Bind("Id_Evento,data_Hora,Endereco,Carga_Horario,Descricao,Responsavel")] Evento evento)
         {
             if (ModelState.IsValid)
             {
@@ -88,7 +85,7 @@ namespace AiderHubAtual.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("id_Evento,Endereco,Descricao,Responsavel")] Evento evento)
+        public async Task<IActionResult> Edit(int id, [Bind("Id_Evento,data_Hora,Endereco,Carga_Horario,Descricao,Responsavel")] Evento evento)
         {
             if (id != evento.Id_Evento)
             {

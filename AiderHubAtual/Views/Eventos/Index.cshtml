@@ -9,156 +9,51 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-
-<body>
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Endereco)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Descricao)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Responsavel)
-                </th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Endereco)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Descricao)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Responsavel)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id_Evento">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id_Evento">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id_Evento">Delete</a> |
-                    <form class="checkInForm" method="post">
-                        <input type="hidden" name="address" value="@item.Endereco" />
-                        <button type="submit" class="getLocationBtn">Check-In</button>
-                    </form>
-                </td>
-            </tr>
-            }
-        </tbody>
-    </table>
-</body>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<script>
-    var forms = document.getElementsByClassName("checkInForm");
-    for (var i = 0; i < forms.length; i++) {
-        forms[i].addEventListener("submit", function (event) {
-            event.preventDefault(); // Prevent the default form submission
-
-            getLocation(this); // Pass the current form as an argument
-        });
-    }
-
-    function getLocation(form) {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function (position) {
-                sendPosition(form, position);
-            });
-        } else {
-            console.log("Geolocation is not supported by this browser.");
-        }
-    }
-
-    function sendPosition(form, position) {
-        var latitude = position.coords.latitude;
-        var longitude = position.coords.longitude;
-
-        var address = form.querySelector("input[name='address']").value;
-
-        $.ajax({
-            url: '/Home/CheckIn',
-            type: 'POST',
-            data: { address: address, deviceLatitude: latitude, deviceLongitude: longitude },
-            success: function (response) {
-                $('body').html(response);
-            },
-            error: function (response) {
-                $('body').html(response);
-            }
-        });
-    }
-
-    // Rest of your JavaScript code...
-
-    function showWarning(message) {
-        // Create a warning element
-        var warningElement = document.createElement("div");
-        warningElement.classList.add("warning");
-        warningElement.textContent = message;
-
-        // Append the warning element to the document body
-        document.body.appendChild(warningElement);
-
-        // Remove the warning element after 3 seconds
-        setTimeout(function () {
-            warningElement.remove();
-        }, 3000);
-    }
-</script>
-
-
-@*<script>
-        document.getElementById("getLocationBtn").removeEventListener("click", getLocation);
-        document.getElementById("getLocationBtn").addEventListener("click", getLocation());
-
-        function getLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(sendPosition);
-            } else {
-                console.log("Geolocation is not supported by this browser.");
-            }
-        }
-
-        function sendPosition(position) {
-            var latitude = position.coords.latitude;
-            var longitude = position.coords.longitude;
-
-            $.ajax({
-                url: '/Home/CheckIn',
-                type: 'POST',
-                data: { deviceLatitude: latitude, deviceLongitude: longitude },
-                success: function (response) {
-                    // Handle the response from the server if needed
-                    console.log(response);
-                    // Show a warning message on the webpage
-                    showWarning("Check-in successful!");
-                },
-                error: function (error) {
-                    // Handle any errors that occurred during the AJAX request
-                    console.log(error);
-                }
-            });
-        }
-
-        function showWarning(message) {
-            // Create a warning element
-            var warningElement = document.createElement("div");
-            warningElement.classList.add("warning");
-            warningElement.textContent = message;
-
-            // Append the warning element to the document body
-            document.body.appendChild(warningElement);
-
-            // Remove the warning element after 3 seconds
-            setTimeout(function () {
-                warningElement.remove();
-            }, 3000);
-        }
-    </script>*@
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.data_Hora)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Endereco)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Carga_Horario)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Descricao)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Responsavel)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.data_Hora)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Endereco)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Carga_Horario)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Descricao)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Responsavel)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id_Evento">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id_Evento">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id_Evento">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

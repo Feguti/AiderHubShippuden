@@ -14,10 +14,11 @@ namespace AiderHubAtual.Models
             
         }
         public DbSet<Evento> Eventos { get; set; }
-        public DbSet<Relatorio> Relatorios { get; set; }
+        public DbSet<Inscricao> Inscricoes { get; set; }
         public DbSet<Ong> Ongs { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Voluntario> Voluntarios { get; set; }
-        public DbSet<Calendario> Calendarios { get; set; }
+
+        //public DbSet<Calendario> Calendarios { get; set; }
     }
 }

@@ -1,14 +1,23 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Globalization;
 using System;
+using AiderHubAtual.Models;
+using System.Linq;
 
 namespace AiderHubAtual.Controllers
 {
     public class HomeController : Controller
     {
-
+        private readonly OpenStreetMapService _openStreetMapService;
+        private readonly Context _context;
+        public HomeController(Context context)
+        {
+            _openStreetMapService = new OpenStreetMapService();
+            _context = context;
+        }
         public ActionResult Index()
         {
+            Usuario usuario = _context.Usuarios.FirstOrDefault(u => u.Tipo == "V"); // verificando se é voluntario
             return View();
         }
 
@@ -17,13 +26,6 @@ namespace AiderHubAtual.Controllers
             ViewBag.Message = "Your application description page.";
 
             return View();
-        }
-
-        private readonly OpenStreetMapService _openStreetMapService;
-
-        public HomeController()
-        {
-            _openStreetMapService = new OpenStreetMapService();
         }
 
         public ActionResult Endereco(string address, string deviceLatitude, string deviceLongitude)

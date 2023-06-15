@@ -53,15 +53,36 @@ namespace AiderHubAtual.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nome,DataNascimento,Cpf,Endereco,Formacao,Sobre,Interesses,Telefone,Tipo")] Voluntario voluntario)
+        public async Task<IActionResult> Create([Bind("Id,Nome,Foto,DataNascimento,Cpf,Email,Senha,Telefone,Endereco,Formacao,Sobre,Interesses,Tipo")] Voluntario voluntario)
         {
             if (ModelState.IsValid)
             {
                 _context.Add(voluntario);
                 await _context.SaveChangesAsync();
+
+
+                Usuario usuario = new Usuario
+                {
+                    Id = voluntario.Id,
+                    Email = voluntario.Email,
+                    Senha = voluntario.Senha,
+                    Tipo = "V",
+                    Status = true
+                };
+
+                //await CreateUsuarioAsync(usuario);
+                var usuarioController = new UsuariosController(_context);
+                await usuarioController.Create(usuario);
+
                 return RedirectToAction(nameof(Index));
             }
             return View(voluntario);
+        }
+
+        public async Task CreateUsuarioAsync(Usuario usuario)
+        {
+            _context.Add(usuario);
+            await _context.SaveChangesAsync();
         }
 
         // GET: Voluntarios/Edit/5
@@ -85,7 +106,7 @@ namespace AiderHubAtual.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,DataNascimento,Cpf,Endereco,Formacao,Sobre,Interesses,Telefone,Tipo")] Voluntario voluntario)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,Foto,DataNascimento,Cpf,Email,Senha,Telefone,Endereco,Formacao,Sobre,Interesses,Tipo")] Voluntario voluntario)
         {
             if (id != voluntario.Id)
             {

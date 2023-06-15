@@ -13,10 +13,12 @@ namespace AiderHubAtual.Models
         [Key]
         [Column("id_evento")]
         public int Id_Evento { get; set; }
-        //public System.DateTime data_Hora { get; set; }
+        [Column("data_hora")]
+        public DateTime data_Hora { get; set; }
         [Column("endereco")]
         public string Endereco { get; set; }
-        // public System.TimeSpan Carga_Horario { get; set; }
+        [Column("carga_horario")]
+        public TimeSpan Carga_Horario { get; set; }
         [Column("descricao")]
         public string Descricao { get; set; }
         [Column("responsavel")]
@@ -24,12 +26,12 @@ namespace AiderHubAtual.Models
 
         public Evento() { }
 
-        public Evento(int id_evento, /*System.DateTime data_hora*/ string endereco,/*/System.TimeSpan carga_horario*/ string descricao, string responsavel)
+        public Evento(int id_evento, DateTime data_hora, string endereco, TimeSpan carga_horario, string descricao, string responsavel)
         {
             Id_Evento = id_evento;
-            //data_Hora = data_hora;
+            data_Hora = data_hora;
             Endereco = endereco;
-            //Carga_Horario = carga_horario;
+            Carga_Horario = carga_horario;
             Descricao = descricao;
             Responsavel = responsavel;
         }

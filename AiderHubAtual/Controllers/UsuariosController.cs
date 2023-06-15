@@ -53,7 +53,7 @@ namespace AiderHubAtual.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Email,Senha,Status")] Usuario usuario)
+        public async Task<IActionResult> Create([Bind("Id,Email,Senha,Status,Tipo")] Usuario usuario)
         {
             if (ModelState.IsValid)
             {
@@ -85,7 +85,7 @@ namespace AiderHubAtual.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Email,Senha,Status")] Usuario usuario)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Email,Senha,Status,Tipo")] Usuario usuario)
         {
             if (id != usuario.Id)
             {
@@ -147,6 +147,51 @@ namespace AiderHubAtual.Controllers
         private bool UsuarioExists(int id)
         {
             return _context.Usuarios.Any(e => e.Id == id);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(string email, string senha)
+        {
+            // Verificar se o email e a senha estão corretos
+            bool loginValido = VerificarCredenciais(email, senha);
+
+            if (loginValido)
+            {
+                // Login bem-sucedido, redirecionar para a página principal
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                // Credenciais inválidas, exibir mensagem de erro
+                ModelState.AddModelError(string.Empty, "Email ou senha inválidos");
+                ViewBag.Mensagem = "Senha ou Email estão invalidos";
+                return View("LoginPage");
+            }
+        }
+
+        private bool VerificarCredenciais(string email, string senha)
+        {
+            // Buscar o registro de usuário com o email informado
+            Usuario usuario = _context.Usuarios.FirstOrDefault(u => u.Email == email);
+
+            if (usuario != null)
+            {
+                // Verificar se a senha fornecida corresponde à senha do usuário
+                if (usuario.Senha == senha)
+                {
+                    // Credenciais válidas
+                    return true;
+                }
+            }
+
+            // Credenciais inválidas
+            return false;
+        }
+
+        public IActionResult LoginPage()
+        {
+            return View();
         }
     }
 }

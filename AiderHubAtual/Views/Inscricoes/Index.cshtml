@@ -1,4 +1,4 @@
-﻿@model IEnumerable<AiderHubAtual.Models.Relatorio>
+﻿@model IEnumerable<AiderHubAtual.Models.Inscricao>
 
 @{
     ViewData["Title"] = "Index";
@@ -13,19 +13,22 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Foto)
+                @Html.DisplayNameFor(model => model.idEvento)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.idVoluntario)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.idEvento)
+                @Html.DisplayNameFor(model => model.Status)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.RelatorioGerado)
+                @Html.DisplayNameFor(model => model.Tipo)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DataGeracao)
+                @Html.DisplayNameFor(model => model.Confirmacao)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DataInscricao)
             </th>
             <th></th>
         </tr>
@@ -34,19 +37,22 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Foto)
+                @Html.DisplayFor(modelItem => item.idEvento)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.idVoluntario)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.idEvento)
+                @Html.DisplayFor(modelItem => item.Status)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.RelatorioGerado)
+                @Html.DisplayFor(modelItem => item.Tipo)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.DataGeracao)
+                @Html.DisplayFor(modelItem => item.Confirmacao)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DataInscricao)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

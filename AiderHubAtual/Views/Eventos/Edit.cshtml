@@ -14,9 +14,19 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id_Evento" />
             <div class="form-group">
+                <label asp-for="data_Hora" class="control-label"></label>
+                <input asp-for="data_Hora" class="form-control" />
+                <span asp-validation-for="data_Hora" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="Endereco" class="control-label"></label>
                 <input asp-for="Endereco" class="form-control" />
                 <span asp-validation-for="Endereco" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Carga_Horario" class="control-label"></label>
+                <input asp-for="Carga_Horario" class="form-control" />
+                <span asp-validation-for="Carga_Horario" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Descricao" class="control-label"></label>
@@ -39,6 +49,3 @@
     <a asp-action="Index">Back to List</a>
 </div>
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
