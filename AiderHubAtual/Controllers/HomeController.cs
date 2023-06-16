@@ -3,11 +3,13 @@ using System.Globalization;
 using System;
 using AiderHubAtual.Models;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
 
 namespace AiderHubAtual.Controllers
 {
     public class HomeController : Controller
     {
+        public bool VoluntarioLogado { get; set; }
         private readonly OpenStreetMapService _openStreetMapService;
         private readonly Context _context;
         public HomeController(Context context)
@@ -15,9 +17,28 @@ namespace AiderHubAtual.Controllers
             _openStreetMapService = new OpenStreetMapService();
             _context = context;
         }
-        public ActionResult Index()
+        public ActionResult Index(int id, string tipo)
         {
-            Usuario usuario = _context.Usuarios.FirstOrDefault(u => u.Tipo == "V"); // verificando se é voluntario
+            Usuario usuario = _context.Usuarios.FirstOrDefault(u => u.Id == id && u.Tipo == tipo); // verificando se é voluntario
+
+            if (usuario.Tipo == "V")
+            {
+                bool voluntarioLogado = (usuario != null && usuario.Tipo == "V");
+                //var idus = usuario.Id;
+                //var tipoUs = usuario.Tipo;
+                //HttpContext.Session.SetInt32("UserId", idus);
+                //HttpContext.Session.SetString("TipoId", tipoUs);
+                ViewBag.VoluntarioLogado = voluntarioLogado;
+            }
+            else
+            {
+                //var idus = usuario.Id;
+                //var tipoUs = usuario.Tipo;
+                //HttpContext.Session.SetInt32("UserId", idus);
+                //HttpContext.Session.SetString("TipoId", tipoUs);
+                bool voluntarioLogado = false;
+                ViewBag.VoluntarioLogado = voluntarioLogado;
+            }
             return View();
         }
 

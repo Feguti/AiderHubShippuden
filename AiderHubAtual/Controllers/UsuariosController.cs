@@ -159,7 +159,9 @@ namespace AiderHubAtual.Controllers
             if (loginValido)
             {
                 // Login bem-sucedido, redirecionar para a página principal
-                return RedirectToAction("Index", "Home");
+                int userId = ObterUserId(email);
+                string userTipo = ObterTipo(email);
+                return RedirectToAction("Index", "Home", new{ id = userId, tipo = userTipo });
             }
             else
             {
@@ -174,7 +176,7 @@ namespace AiderHubAtual.Controllers
         {
             // Buscar o registro de usuário com o email informado
             Usuario usuario = _context.Usuarios.FirstOrDefault(u => u.Email == email);
-
+           
             if (usuario != null)
             {
                 // Verificar se a senha fornecida corresponde à senha do usuário
@@ -189,7 +191,39 @@ namespace AiderHubAtual.Controllers
             return false;
         }
 
+        private int ObterUserId(string email)
+        {
+            // Buscar o registro de usuário com o email informado
+            Usuario usuario = _context.Usuarios.FirstOrDefault(u => u.Email == email);
+
+            if (usuario != null)
+            {
+                // Retornar o userId
+                return usuario.Id;
+            }
+
+            return 0; // ou outro valor indicando que o userId não foi encontrado
+        }
+        private string ObterTipo(string email)
+        {
+            // Buscar o registro de usuário com o email informado
+            Usuario usuario = _context.Usuarios.FirstOrDefault(u => u.Email == email);
+
+            if (usuario != null)
+            {
+                // Retornar o userId
+                return usuario.Tipo;
+            }
+
+            return " "; // ou outro valor indicando que o userId não foi encontrado
+        }
+
+
         public IActionResult LoginPage()
+        {
+            return View();
+        }
+        public IActionResult ongVol()
         {
             return View();
         }
