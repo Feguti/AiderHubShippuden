@@ -27,17 +27,17 @@ namespace AiderHubAtual.Controllers
         }
 
 
-        //public async Task<IActionResult> IndexOng()
-        //{
-        //    int idUser = HttpContext.Session.GetInt32("IdUser") ?? 0;
+        public async Task<IActionResult> IndexOng()
+        {
+            int idUser = HttpContext.Session.GetInt32("IdUser") ?? 0;
 
-        //    // Filtrar as inscrições pelo valor de idVoluntario
-        //    var eventos = await _context.Eventos
-        //        .Where(e => e./*idOng*/ == idUser)
-        //        .ToListAsync();
+            // Filtrar as inscrições pelo valor de idVoluntario
+            var eventos = await _context.Eventos
+                .Where(e => e.IdOng == idUser)
+                .ToListAsync();
 
-        //    return View(eventos);
-        //}
+            return View(eventos);
+        }
         // GET: Eventos/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -67,13 +67,15 @@ namespace AiderHubAtual.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id_Evento,data_Hora,Endereco,Carga_Horario,Descricao,Responsavel")] Evento evento)
+        public async Task<IActionResult> Create([Bind("Id_Evento,data_Hora,Endereco,Carga_Horario,Descricao,Responsavel,IdOng")] Evento evento)
         {
+            int idUser = HttpContext.Session.GetInt32("IdUser") ?? 0;
             if (ModelState.IsValid)
             {
+                evento.IdOng = idUser;
                 _context.Add(evento);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(IndexOng));
             }
             return View(evento);
         }
@@ -99,8 +101,9 @@ namespace AiderHubAtual.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id_Evento,data_Hora,Endereco,Carga_Horario,Descricao,Responsavel")] Evento evento)
+        public async Task<IActionResult> Edit(int id, [Bind("Id_Evento,data_Hora,Endereco,Carga_Horario,Descricao,Responsavel,IdOng")] Evento evento)
         {
+            int idUser = HttpContext.Session.GetInt32("IdUser") ?? 0;
             if (id != evento.Id_Evento)
             {
                 return NotFound();
@@ -110,6 +113,7 @@ namespace AiderHubAtual.Controllers
             {
                 try
                 {
+                    evento.IdOng = idUser;
                     _context.Update(evento);
                     await _context.SaveChangesAsync();
                 }
@@ -213,6 +217,7 @@ namespace AiderHubAtual.Controllers
           
             return View("Inscricao"); 
         }
+
         //public void CriarTabelaInscricoes(int idEvento)
         //{
         //    // Caminho do arquivo .xlsm
@@ -227,7 +232,7 @@ namespace AiderHubAtual.Controllers
         //    var xlWorkbook = xlApp.Workbooks.Open(caminho);
 
         //    // Selecionar a planilha onde a tabela será criada (por exemplo, planilha "Dados")
-        //    var xlWorksheet = (Excel.Worksheet)xlWorkbook.Sheets["Dados"];
+        //    //var xlWorksheet = (Excel.Worksheet)xlWorkbook.Sheets["Dados"];
 
         //    // Obter os dados da tabela de inscrições para o evento específico
         //    List<Inscricao> inscricoes = ObterInscricoesPorEvento(idEvento);
@@ -281,7 +286,7 @@ namespace AiderHubAtual.Controllers
         //                    NomeVoluntario = voluntario.Nome,
         //                    CargaHoraria = evento.Carga_Horario,
         //                    DataEvento = evento.data_Hora,
-        //                    //Ong = evento.idOng falta adicionar no bdd um id_ong
+        //                    //Ong = evento.IdOng falta adicionar no bdd um id_ong
         //                };
 
         //                // Adicionar a inscrição à lista

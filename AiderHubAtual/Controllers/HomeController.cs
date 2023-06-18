@@ -132,17 +132,13 @@ namespace AiderHubAtual.Controllers
                 ViewBag.coordenadas = $"{parsedDeviceLatitude}, {parsedDeviceLongitude}";
                 ViewBag.distancia = distanceInMeters;
 
-                var inscricao = _context.Inscricoes.FirstOrDefault(i => i.Id == idEvento && i.idVoluntario == idUser);
+                var inscricao = _context.Inscricoes.FirstOrDefault(i => i.idEvento == idEvento && i.idVoluntario == idUser);
 
                 if (inscricao != null)
                 {
-                    // Atualize o campo "Confirmacao"
                     inscricao.Confirmacao = true;
-
-                    // Salve as alterações no banco de dados
                     _context.SaveChanges();
 
-                    // Retorne uma resposta adequada, se necessário
                     return Ok();
                 }
 
