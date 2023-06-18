@@ -17,25 +17,31 @@ namespace AiderHubAtual.Controllers
             _openStreetMapService = new OpenStreetMapService();
             _context = context;
         }
+
+        public ActionResult Inicial()
+        {
+            int? idUser = HttpContext.Session.GetInt32("IdUser");
+            string userTipo = HttpContext.Session.GetString("userTipo");
+
+            if (idUser.HasValue && !string.IsNullOrEmpty(userTipo))
+            {
+                return RedirectToAction("Index", new { id = idUser.Value, tipo = userTipo });
+            }
+
+            return RedirectToAction("LoginPage", "Usuarios");
+        }
         public ActionResult Index(int id, string tipo)
         {
-            Usuario usuario = _context.Usuarios.FirstOrDefault(u => u.Id == id && u.Tipo == tipo); // verificando se é voluntario
+            Usuario usuario = _context.Usuarios.FirstOrDefault(u => u.Id == id && u.Tipo == tipo);
 
             if (usuario.Tipo == "V")
             {
                 bool voluntarioLogado = (usuario != null && usuario.Tipo == "V");
-                //var idus = usuario.Id;
-                //var tipoUs = usuario.Tipo;
-                //HttpContext.Session.SetInt32("UserId", idus);
-                //HttpContext.Session.SetString("TipoId", tipoUs);
+
                 ViewBag.VoluntarioLogado = voluntarioLogado;
             }
             else
             {
-                //var idus = usuario.Id;
-                //var tipoUs = usuario.Tipo;
-                //HttpContext.Session.SetInt32("UserId", idus);
-                //HttpContext.Session.SetString("TipoId", tipoUs);
                 bool voluntarioLogado = false;
                 ViewBag.VoluntarioLogado = voluntarioLogado;
             }
@@ -48,8 +54,23 @@ namespace AiderHubAtual.Controllers
 
             return View();
         }
+        public IActionResult GetEndereco(int idEvento)
+        {
+            var evento = _context.Eventos.FirstOrDefault(e => e.Id_Evento == idEvento);
 
-        public ActionResult Endereco(string address, string deviceLatitude, string deviceLongitude)
+            if (evento == null)
+            {
+                return NotFound(); // Evento não encontrado
+            }
+
+            var address = evento.Endereco;
+
+            return Ok(address);
+        }
+
+
+
+        public ActionResult Endereco(string address, string deviceLatitude, string deviceLongitude, int idEvento)
         {
             Coordinates coordinates = _openStreetMapService.GetCoordinates(address);
 
@@ -60,10 +81,16 @@ namespace AiderHubAtual.Controllers
                 ViewBag.Latitude = coordinates.Latitude;
                 ViewBag.Longitude = coordinates.Longitude;
 
-                return RedirectToAction("Resultado", new { databaseLatitude = ViewBag.Latitude, databaseLongitude = ViewBag.Longitude,
-                    deviceLatitude, deviceLongitude});
+                return RedirectToAction("Resultado", new
+                {
+                    databaseLatitude = ViewBag.Latitude,
+                    databaseLongitude = ViewBag.Longitude,
+                    deviceLatitude,
+                    deviceLongitude,
+                   idEvento
+                });
                 //return View();
-               // return RedirectToAction("Device", new { databaseLat = ViewBag.Latitude, databaseLone = ViewBag.Longitude });
+                // return RedirectToAction("Device", new { databaseLat = ViewBag.Latitude, databaseLone = ViewBag.Longitude });
             }
             else
             {
@@ -74,22 +101,22 @@ namespace AiderHubAtual.Controllers
         }
 
         [HttpPost]
-        public ActionResult CheckIn(string address, string deviceLatitude, string deviceLongitude)
+        public ActionResult CheckIn(int idEvento, string address, string deviceLatitude, string deviceLongitude)
         {
-            return RedirectToAction("Endereco", new { address, deviceLatitude, deviceLongitude });
+            return RedirectToAction("Endereco", new { address, deviceLatitude, deviceLongitude, idEvento });
         }
 
         [HttpGet]
         [HttpPost]
-        public ActionResult Resultado(string databaseLatitude, string databaseLongitude, string deviceLatitude, string deviceLongitude)
+        public ActionResult Resultado(string databaseLatitude, string databaseLongitude, string deviceLatitude, string deviceLongitude, int idEvento)
         {
-
+            int idUser = HttpContext.Session.GetInt32("IdUser") ?? 0;
             double parsedDeviceLatitude = double.Parse(deviceLatitude, CultureInfo.InvariantCulture);
             double parsedDeviceLongitude = double.Parse(deviceLongitude, CultureInfo.InvariantCulture);
             //double deviceLatitude = -23.465585;
             //double deviceLongitude = -46.573850;
 
-            if(string.IsNullOrEmpty(databaseLatitude) || string.IsNullOrEmpty(databaseLongitude))
+            if (string.IsNullOrEmpty(databaseLatitude) || string.IsNullOrEmpty(databaseLongitude))
             {
                 return View("Eventos/Index");
             }
@@ -99,22 +126,36 @@ namespace AiderHubAtual.Controllers
 
             double distanceInMeters = CalculateDistance(parsedDeviceLatitude, parsedDeviceLongitude, parsedDataBaselatitude, parsedDataBaselongitude);
 
-                if (distanceInMeters <= 4000)
-                {
-                    ViewBag.resultado = "DENTRO DO RAIO, CHECK-IN REALIZADO COM SUCESSO!";
-                    ViewBag.coordenadas = $"{parsedDeviceLatitude}, {parsedDeviceLongitude}";
-                    ViewBag.distancia = distanceInMeters;
+            if (distanceInMeters <= 34000)
+            {
+                ViewBag.resultado = "DENTRO DO RAIO, CHECK-IN REALIZADO COM SUCESSO!";
+                ViewBag.coordenadas = $"{parsedDeviceLatitude}, {parsedDeviceLongitude}";
+                ViewBag.distancia = distanceInMeters;
 
-                    return RedirectToAction("Validar", new { result = ViewBag.resultado, coordinate = ViewBag.coordenadas, distance = ViewBag.distancia });
-                }
-                else
-                {
-                    ViewBag.resultado = "FORA DO RAIO, CHECK-IN INVÁLIDO!";
-                    ViewBag.coordenadas = $"{parsedDeviceLatitude}, {parsedDeviceLongitude}";
-                    ViewBag.distancia = distanceInMeters;
+                var inscricao = _context.Inscricoes.FirstOrDefault(i => i.Id == idEvento && i.idVoluntario == idUser);
 
-                    return RedirectToAction("Validar", new { result = ViewBag.resultado, coordinate = ViewBag.coordenadas, distance = ViewBag.distancia });
+                if (inscricao != null)
+                {
+                    // Atualize o campo "Confirmacao"
+                    inscricao.Confirmacao = true;
+
+                    // Salve as alterações no banco de dados
+                    _context.SaveChanges();
+
+                    // Retorne uma resposta adequada, se necessário
+                    return Ok();
                 }
+
+                return RedirectToAction("Validar", new { result = ViewBag.resultado, coordinate = ViewBag.coordenadas, distance = ViewBag.distancia });
+            }
+            else
+            {
+                ViewBag.resultado = "FORA DO RAIO, CHECK-IN INVÁLIDO!";
+                ViewBag.coordenadas = $"{parsedDeviceLatitude}, {parsedDeviceLongitude}";
+                ViewBag.distancia = distanceInMeters;
+
+                return RedirectToAction("Validar", new { result = ViewBag.resultado, coordinate = ViewBag.coordenadas, distance = ViewBag.distancia });
+            }
         }
 
         public ActionResult Validar(string result, string coordinate, double distance)
@@ -141,6 +182,14 @@ namespace AiderHubAtual.Controllers
             var distance = EarthRadius * c;
 
             return distance;
+        }
+
+        public ActionResult Saindo()
+        {
+            HttpContext.Session.Clear();
+
+            // Redireciona para a página de login
+            return RedirectToAction("LoginPage", "Usuarios");
         }
 
         /*[HttpPost]

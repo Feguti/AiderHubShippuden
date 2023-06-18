@@ -35,6 +35,12 @@ namespace AiderHubAtual
 
             services.AddDbContext<Context>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("ConnAider")));
+            services.AddDistributedMemoryCache();
+            services.AddSession(options =>
+            {
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
 
         }
 
@@ -58,6 +64,8 @@ namespace AiderHubAtual
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseSession();
 
             app.UseEndpoints(endpoints =>
             {

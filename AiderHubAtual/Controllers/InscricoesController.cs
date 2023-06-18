@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using AiderHubAtual.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace AiderHubAtual.Controllers
 {
@@ -21,8 +22,16 @@ namespace AiderHubAtual.Controllers
         // GET: Inscricoes
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Inscricoes.ToListAsync());
+            int idUser = HttpContext.Session.GetInt32("IdUser") ?? 0;
+
+            // Filtrar as inscrições pelo valor de idVoluntario
+            var inscricoes = await _context.Inscricoes
+                .Where(i => i.idVoluntario == idUser)
+                .ToListAsync();
+
+            return View(inscricoes);
         }
+
 
         // GET: Inscricoes/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -59,7 +68,6 @@ namespace AiderHubAtual.Controllers
             {
                 _context.Add(inscricao);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
             }
             return View(inscricao);
         }
@@ -87,6 +95,7 @@ namespace AiderHubAtual.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,idEvento,idVoluntario,Status,Tipo,Confirmacao,DataInscricao")] Inscricao inscricao)
         {
+
             if (id != inscricao.Id)
             {
                 return NotFound();

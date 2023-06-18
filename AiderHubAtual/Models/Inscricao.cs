@@ -21,15 +21,15 @@ namespace AiderHubAtual.Models
         public bool Status { get; set; }
         [Column("tipo")]
         public string Tipo { get; set; }
-        [Column("confimacao")]
+        [Column("confirmacao")]
         public bool Confirmacao { get; set; }
 
-        [Column("dataInscrcicao")]
+        [Column("datainscricao")]
         public DateTime DataInscricao { get; set; }
 
         public Inscricao() { }
 
-        public Inscricao(int id_inscricao, int id_evento, int id_voluntario, bool status, string tipo, bool confirmacao, DateTime dataInscricao)
+        public Inscricao(int id_inscricao, int id_evento, int id_voluntario, bool status, string tipo, bool confirmacao, DateTime datainscricao)
         {
             Id = id_inscricao;
             idEvento = id_evento;
@@ -37,7 +37,7 @@ namespace AiderHubAtual.Models
             Status = status;
             Tipo = tipo;
             Confirmacao = confirmacao;
-            DataInscricao = dataInscricao;
+            DataInscricao = datainscricao;
         }
     }
 }

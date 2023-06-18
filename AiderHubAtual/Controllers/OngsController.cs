@@ -57,6 +57,7 @@ namespace AiderHubAtual.Controllers
         {
             if (ModelState.IsValid)
             {
+                ong.Tipo = "O";
                 _context.Add(ong);
                 await _context.SaveChangesAsync();
 

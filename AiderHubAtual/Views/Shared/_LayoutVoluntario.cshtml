@@ -11,13 +11,22 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Inicial"> <img src="~/LogoAiderHub(2).png" asp-append-version="true" alt="Logo da AiderHub" /></a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Inicial"> <img src="~/LogoAiderHub(2).png" class="" asp-append-version="true" alt="Logo da AiderHub" /></a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
+                       <li class="nav-item">
+                           <a class="nav-link text-dark" asp-area="" asp-controller="Inscricoes" asp-action="Index">Minhas Inscrições</a>
+                       </li>
+                       <li class="nav-item">
+                           <a class="nav-link text-dark" asp-area="" asp-controller="Eventos" asp-action="Index">Eventos</a>
+                       </li>
+=                      <li class="nav-item text-right">
+                            <a class="nav-link text-danger" asp-area="" asp-controller="Home" asp-action="Saindo">Sair</a>
+                        </li>
                     </ul>
                 </div>
             </div>

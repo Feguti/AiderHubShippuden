@@ -57,6 +57,7 @@ namespace AiderHubAtual.Controllers
         {
             if (ModelState.IsValid)
             {
+                voluntario.Tipo = "V";
                 _context.Add(voluntario);
                 await _context.SaveChangesAsync();
 

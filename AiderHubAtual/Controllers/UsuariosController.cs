@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using AiderHubAtual.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace AiderHubAtual.Controllers
 {
@@ -161,6 +162,8 @@ namespace AiderHubAtual.Controllers
                 // Login bem-sucedido, redirecionar para a página principal
                 int userId = ObterUserId(email);
                 string userTipo = ObterTipo(email);
+                HttpContext.Session.SetInt32("IdUser", userId);
+                HttpContext.Session.SetString("IdTipo", userTipo);
                 return RedirectToAction("Index", "Home", new{ id = userId, tipo = userTipo });
             }
             else

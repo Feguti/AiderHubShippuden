@@ -1,15 +1,9 @@
 ﻿
 @{
     ViewData["Title"] = "Login";
+    Layout = "_LayoutLogin";
 }
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">AiderHubAtual</a>
-            </div>
-        </nav>
-    </header>
+
     <form asp-action="Login" method="post">
         <div class="form-group">
             <label for="email">Email:</label>
@@ -19,7 +13,9 @@
             <label for="senha">Senha:</label>
             <input type="password" class="form-control" id="senha" name="Senha" required>
         </div>
-        <a class="link-opacity-50-hover" asp-area="" asp-controller="Usuarios" asp-action="ongVol">Cadastre-se</a>
+        <div>
+            <a class="link-opacity-50-hover p-2 ms-auto" asp-area="" asp-controller="Usuarios" asp-action="ongVol">Cadastre-se</a>
+        </div>
         <button type="submit" class="btn btn-primary">Login</button>
     </form>
 
@@ -27,4 +23,3 @@
     {
         <div>@ViewBag.Mensagem</div>
     }
-</body>
