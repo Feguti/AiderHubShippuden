@@ -4,8 +4,6 @@
     ViewData["Title"] = "View";
 }
 
-<h1>View</h1>
-
 <p>
     <a asp-action="Create">Create New</a>
 </p>
@@ -51,7 +49,8 @@
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id_Evento">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id_Evento">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id_Evento">Delete</a>
+                <a asp-action="Delete" asp-route-id="@item.Id_Evento">Delete</a> |
+                <a asp-action="Encerrar" asp-route-id="@item.Id_Evento">Encerrar</a>
             </td>
         </tr>
 }

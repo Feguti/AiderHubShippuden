@@ -1,6 +1,6 @@
 ﻿namespace AiderHubAtual.Controllers
 {
-    internal class InscricaoData
+    public class InscricaoData
     {
         public int idEvento { get; set; }
         public object idVoluntario { get; set; }

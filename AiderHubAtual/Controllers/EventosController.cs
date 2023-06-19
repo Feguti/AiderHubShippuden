@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using AiderHubAtual.Models;
 using Microsoft.AspNetCore.Http;
 using System.IO;
+using Microsoft.Office.Interop.Excel;
+using System.Runtime.InteropServices;
 
 namespace AiderHubAtual.Controllers
 {
@@ -214,90 +216,113 @@ namespace AiderHubAtual.Controllers
             // Faça o processamento necessário com a inscrição
 
             ViewBag.Mensagem = "Inscrição Confirmada";
-          
-            return View("Inscricao"); 
+
+            return View("Inscricao");
+        }
+        public IActionResult Encerrar(int id)
+        {
+            //string nomeArquivo = "MacroCertificado.xlsm";
+            //string diretorioAtual = AppDomain.CurrentDomain.BaseDirectory;
+            //string caminho = Path.Combine(diretorioAtual, "Relatorio", nomeArquivo);
+
+            string caminho = "C:\\Users\\PC\\Documents\\AiderHubShippuden\\AiderHubAtual\\Relatorio\\MacroCertificadoa.xlsm";
+
+            Application xlApp = new Application();
+            Workbook xlWorkbook = null;
+            Worksheet ws = null;
+
+            try
+            {
+                xlWorkbook = xlApp.Workbooks.Open(caminho);
+                ws = (Worksheet)xlApp.ActiveSheet;
+
+                List<InscricaoData> inscricoes = ObterInscricoesPorEvento(id);
+
+                int startRow = 2; // Começando na linha 2 (exemplo)
+
+                for (int i = 0; i < inscricoes.Count; i++)
+                {
+                    var inscricao = inscricoes[i];
+
+                    ws.Cells[startRow + i, 1] = inscricao.idEvento;
+                    ws.Cells[startRow + i, 2] = inscricao.idVoluntario;
+                    ws.Cells[startRow + i, 3] = inscricao.NomeVoluntario;
+                    ws.Cells[startRow + i, 4] = inscricao.CargaHoraria;
+                    ws.Cells[startRow + i, 5] = inscricao.DataEvento;
+                    ws.Cells[startRow + i, 6] = inscricao.Ong;
+                }
+
+                xlWorkbook.Save();
+
+                try
+                {
+                    xlApp.Visible = false;
+                    xlApp.Run("GerarCertificado");
+                }
+                catch (Exception)
+                {
+                    ViewBag.Mensagem = "Erro ao executar a macro.";
+                }
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Mensagem = "Erro ao abrir o arquivo da planilha: " + ex.Message;
+            }
+            finally
+            {
+                if (ws != null)
+                {
+                    Marshal.ReleaseComObject(ws);
+                }
+                if (xlWorkbook != null)
+                {
+                    xlWorkbook.Close();
+                    Marshal.ReleaseComObject(xlWorkbook);
+                }
+                if (xlApp != null)
+                {
+                    xlApp.Quit();
+                    Marshal.ReleaseComObject(xlApp);
+                }
+            }
+            return RedirectToAction("Inicial", "Home");
         }
 
-        //public void CriarTabelaInscricoes(int idEvento)
-        //{
-        //    // Caminho do arquivo .xlsm
-        //    string nomeArquivo = "MacroCertificado.xlsm";
-        //    string diretorioAtual = AppDomain.CurrentDomain.BaseDirectory;
-        //    string caminho = Path.Combine(diretorioAtual, "Relatorio", nomeArquivo);
+        public List<InscricaoData> ObterInscricoesPorEvento(int id)
+        {
+            List<InscricaoData> inscricoes = new List<InscricaoData>();
 
-        //    // Criar uma instância do aplicativo Excel
-        //    var xlApp = new Excel.Application();
+            var evento = _context.Eventos.FirstOrDefault(e => e.Id_Evento == id);
+            if (evento != null)
+            {
+                var inscricoesEvento = _context.Inscricoes.Where(i => i.idEvento == id).ToList();
 
-        //    // Abrir o arquivo .xlsm
-        //    var xlWorkbook = xlApp.Workbooks.Open(caminho);
+                foreach (var inscricaoEvento in inscricoesEvento)
+                {
+                    var voluntario = _context.Voluntarios.FirstOrDefault(v => v.Id == inscricaoEvento.idVoluntario);
+                    if (voluntario != null)
+                    {
+                        var ong = _context.Ongs.FirstOrDefault(o => o.Id == evento.IdOng);
+                        if (ong != null)
+                        {
+                            var inscricao = new InscricaoData
+                            {
+                                idEvento = id,
+                                idVoluntario = inscricaoEvento.idVoluntario,
+                                NomeVoluntario = voluntario.Nome,
+                                CargaHoraria = evento.Carga_Horario,
+                                DataEvento = evento.data_Hora,
+                                Ong = ong.NomeFantasia
+                            };
 
-        //    // Selecionar a planilha onde a tabela será criada (por exemplo, planilha "Dados")
-        //    //var xlWorksheet = (Excel.Worksheet)xlWorkbook.Sheets["Dados"];
+                            inscricoes.Add(inscricao);
+                        }
+                    }
+                }
 
-        //    // Obter os dados da tabela de inscrições para o evento específico
-        //    List<Inscricao> inscricoes = ObterInscricoesPorEvento(idEvento);
-
-        //    // Definir a célula inicial para a tabela
-        //    int startRow = 2; // Começando na linha 2 (exemplo)
-
-        //    // Preencher os dados da tabela
-        //    for (int i = 0; i < inscricoes.Count; i++)
-        //    {
-        //        var inscricao = inscricoes[i];
-
-        //        // Preencher as células com os dados da inscrição
-        //        xlWorksheet.Cells[startRow + i, 1] = inscricao.IdEvento;
-        //        xlWorksheet.Cells[startRow + i, 2] = inscricao.IdVoluntario;
-        //    }
-
-        //    // Salvar as alterações no arquivo .xlsm
-        //    xlWorkbook.Save();
-
-        //    // Fechar o arquivo e liberar os recursos
-        //    xlWorkbook.Close();
-        //    xlApp.Quit();
-        //    System.Runtime.InteropServices.Marshal.ReleaseComObject(xlWorksheet);
-        //    System.Runtime.InteropServices.Marshal.ReleaseComObject(xlWorkbook);
-        //    System.Runtime.InteropServices.Marshal.ReleaseComObject(xlApp);
-        //}
-
-        //public List<InscricaoData> ObterInscricoesPorEvento(int idEvento)
-        //{
-        //    List<InscricaoData> inscricoes = new List<InscricaoData>();
-
-        //    // Recuperar os dados do evento com base no IdEvento
-        //    var evento = _context.Eventos.FirstOrDefault(e => e.Id_Evento == idEvento);
-        //    if (evento != null)
-        //    {
-        //        // Recuperar os dados das inscrições para o evento
-        //        var inscricoesEvento = _context.Inscricoes.Where(i => i.idEvento == idEvento).ToList();
-
-        //        foreach (var inscricaoEvento in inscricoesEvento)
-        //        {
-        //            // Recuperar o nome do voluntário com base no IdVoluntario
-        //            var voluntario = _context.Voluntarios.FirstOrDefault(v => v.Id == inscricaoEvento.idVoluntario);
-        //            if (voluntario != null)
-        //            {
-        //                // Criar um objeto Inscricao com os dados recuperados
-        //                var inscricao = new InscricaoData
-        //                {
-        //                    idEvento = idEvento,
-        //                    idVoluntario = inscricaoEvento.idVoluntario,
-        //                    NomeVoluntario = voluntario.Nome,
-        //                    CargaHoraria = evento.Carga_Horario,
-        //                    DataEvento = evento.data_Hora,
-        //                    //Ong = evento.IdOng falta adicionar no bdd um id_ong
-        //                };
-
-        //                // Adicionar a inscrição à lista
-        //                inscricoes.Add(inscricao);
-        //            }
-        //        }
-        //    }
-
-        //    return inscricoes;
-        //}
-
-
+                return inscricoes;
+            }
+            return inscricoes;
+        }
     }
 }
