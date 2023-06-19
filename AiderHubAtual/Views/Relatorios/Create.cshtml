@@ -4,9 +4,11 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+@inject LanguageService language
 
-<h4>Relatorio</h4>
+<h1>@language.GetKey("Create")</h1>
+
+<h4>@language.GetKey("Report")</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">

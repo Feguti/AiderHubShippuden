@@ -6,7 +6,9 @@
     <title>@ViewData["Title"] - AiderHubAtual</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
+    <link href="~/FlagIcon/css/flag-icon.css" rel="stylesheet" />
 </head>
+@inject LanguageService language
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
@@ -19,21 +21,35 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">@language.GetKey("Home")</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">@language.GetKey("Privacy")</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Relatorio">Relatório</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Relatorios" asp-action="Create">@language.GetKey("Report")</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Endereco">Converter Endereços</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Endereco">@language.GetKey("Convert Addresses")</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="CheckIn">Check-in</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="CheckIn">@language.GetKey("Check-in")</a>
                         </li>
                     </ul>
+
+                    <div class="sl-nav">
+                        Idiomas:
+                        <ul>
+                            <li>
+                                <b>Português</b> <i class="fa fa-angle-down" aria-hidden="true"></i>
+                                <div class="triangule"></div>
+                                <ul class="language">
+                                    <li><a asp-controller="Home" asp-action="ChangeLanguage" asp-route-culture="pt-BR" class="nav-link"><i class="flag-icon flag-icon-br"></i>Português</a></li>
+                                    <li><a asp-controller="Home" asp-action="ChangeLanguage" asp-route-culture="en-US" class="nav-link"><i class="flag-icon flag-icon-gb"></i>Inglês</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </nav>
