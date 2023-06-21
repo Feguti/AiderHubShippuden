@@ -5,6 +5,8 @@ using AiderHubAtual.Models;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Http;
 
 namespace AiderHubAtual.Controllers
 {
@@ -47,6 +49,15 @@ namespace AiderHubAtual.Controllers
                 ViewBag.VoluntarioLogado = voluntarioLogado;
             }
             return View();
+        }
+
+        public IActionResult ChangeLanguage(string culture)
+        {
+            Response.Cookies.Append(CookieRequestCultureProvider.DefaultCookieName,
+                CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
+                new CookieOptions() { Expires = DateTimeOffset.UtcNow.AddYears(1) });
+
+            return Redirect(Request.Headers["Referer"].ToString());
         }
 
         public ActionResult Privacy()
@@ -137,8 +148,16 @@ namespace AiderHubAtual.Controllers
 
                 if (inscricao != null)
                 {
-                    inscricao.Confirmacao = true;
-                    _context.SaveChanges();
+                    if (inscricao.Confirmacao == true)
+                    {
+                        ViewBag.Mensagem = "Você já fez check-in nesse evento!";
+                        Return RedirectToAction("Inscricao", "Eventos", new { result = ViewBag.Mensagem });
+                    }
+                    else
+                    {
+                        inscricao.Confirmacao = true;
+                        _context.SaveChanges();
+                    }
                 }
 
                 var evento = _context.Eventos.FirstOrDefault(e => e.Id_Evento == idEvento);
