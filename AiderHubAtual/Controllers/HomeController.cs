@@ -151,7 +151,7 @@ namespace AiderHubAtual.Controllers
                     if (inscricao.Confirmacao == true)
                     {
                         ViewBag.Mensagem = "Você já fez check-in nesse evento!";
-                        Return RedirectToAction("Inscricao", "Eventos", new { result = ViewBag.Mensagem });
+                        return RedirectToAction("Inscricao", "Eventos", new { result = ViewBag.Mensagem });
                     }
                     else
                     {

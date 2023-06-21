@@ -117,14 +117,32 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="About" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>Address</value>
+  </data>
   <data name="Check-in" xml:space="preserve">
     <value>Check-in</value>
+  </data>
+  <data name="CNPJ" xml:space="preserve">
+    <value>CNPJ</value>
   </data>
   <data name="Convert Addresses" xml:space="preserve">
     <value>Convert Addresses</value>
   </data>
+  <data name="Corporate name" xml:space="preserve">
+    <value>Corporate name</value>
+  </data>
+  <data name="CPF" xml:space="preserve">
+    <value>CPF</value>
+  </data>
   <data name="Create" xml:space="preserve">
     <value>Create</value>
+  </data>
+  <data name="Date of Birth" xml:space="preserve">
+    <value>Date of Birth</value>
   </data>
   <data name="Delete" xml:space="preserve">
     <value>Delete</value>
@@ -132,8 +150,17 @@
   <data name="Details" xml:space="preserve">
     <value>Details</value>
   </data>
+  <data name="Digital Signature" xml:space="preserve">
+    <value>Digital Signature</value>
+  </data>
   <data name="Edit" xml:space="preserve">
     <value>Edit</value>
+  </data>
+  <data name="Education" xml:space="preserve">
+    <value>Education</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>Email</value>
   </data>
   <data name="Events" xml:space="preserve">
     <value>Events</value>
@@ -141,14 +168,32 @@
   <data name="Exit" xml:space="preserve">
     <value>Exit</value>
   </data>
+  <data name="Fantasy Name" xml:space="preserve">
+    <value>Fantasy Name</value>
+  </data>
   <data name="Home" xml:space="preserve">
     <value>Home</value>
+  </data>
+  <data name="Interests" xml:space="preserve">
+    <value>Interests</value>
   </data>
   <data name="My Events" xml:space="preserve">
     <value>My Events</value>
   </data>
   <data name="My Subscriptions" xml:space="preserve">
     <value>My Subscriptions</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Passoword" xml:space="preserve">
+    <value>Passoword</value>
+  </data>
+  <data name="Photo" xml:space="preserve">
+    <value>Photo</value>
+  </data>
+  <data name="Photo Logo" xml:space="preserve">
+    <value>Photo Logo</value>
   </data>
   <data name="Privacy" xml:space="preserve">
     <value>Privacy</value>
@@ -159,7 +204,13 @@
   <data name="Report" xml:space="preserve">
     <value>Report</value>
   </data>
+  <data name="Telephone" xml:space="preserve">
+    <value>Telephone</value>
+  </data>
   <data name="Welcome" xml:space="preserve">
     <value>Welcome</value>
+  </data>
+  <data name="Workload" xml:space="preserve">
+    <value>Workload</value>
   </data>
 </root>
