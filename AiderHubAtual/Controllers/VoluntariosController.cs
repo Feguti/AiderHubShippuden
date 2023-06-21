@@ -47,10 +47,7 @@ namespace AiderHubAtual.Controllers
         {
             return View();
         }
-
-        // POST: Voluntarios/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+     
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Nome,Foto,DataNascimento,Cpf,Email,Senha,Telefone,Endereco,Formacao,Sobre,Interesses,Tipo")] Voluntario voluntario)
@@ -75,9 +72,9 @@ namespace AiderHubAtual.Controllers
                 var usuarioController = new UsuariosController(_context);
                 await usuarioController.Create(usuario);
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Inicial", "Home");
             }
-            return View(voluntario);
+            return View("Inicial", "Home");
         }
 
         public async Task CreateUsuarioAsync(Usuario usuario)

@@ -69,7 +69,7 @@ namespace AiderHubAtual.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id_Evento,data_Hora,Endereco,Carga_Horario,Descricao,Responsavel,IdOng")] Evento evento)
+        public async Task<IActionResult> Create([Bind("Id_Evento,data_Hora,Endereco,Carga_Horario,Descricao,Responsavel,Status,IdOng")] Evento evento)
         {
             int idUser = HttpContext.Session.GetInt32("IdUser") ?? 0;
             if (ModelState.IsValid)
@@ -103,7 +103,7 @@ namespace AiderHubAtual.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id_Evento,data_Hora,Endereco,Carga_Horario,Descricao,Responsavel,IdOng")] Evento evento)
+        public async Task<IActionResult> Edit(int id, [Bind("Id_Evento,data_Hora,Endereco,Carga_Horario,Descricao,Responsavel,Status,IdOng")] Evento evento)
         {
             int idUser = HttpContext.Session.GetInt32("IdUser") ?? 0;
             if (id != evento.Id_Evento)
@@ -116,6 +116,7 @@ namespace AiderHubAtual.Controllers
                 try
                 {
                     evento.IdOng = idUser;
+                    evento.Status = true;
                     _context.Update(evento);
                     await _context.SaveChangesAsync();
                 }
@@ -219,110 +220,174 @@ namespace AiderHubAtual.Controllers
 
             return View("Inscricao");
         }
-        public IActionResult Encerrar(int id)
+
+
+        [HttpPost]
+        public async Task<ActionResult> EncerrarAsync(int id)
         {
+
+            var evento = await _context.Eventos
+            .FirstOrDefaultAsync(e => e.Id_Evento == id);
+
+            if ((evento != null) && (evento.Status == false))
+            {
+                // Já existe uma inscrição com os mesmos valores, faça o tratamento necessário
+                ViewBag.Mensagem = "Esse evento já está encerrado!";
+                return RedirectToAction("Index", "Eventos"); // Redireciona para a página desejada
+            }
+
             //string nomeArquivo = "MacroCertificado.xlsm";
             //string diretorioAtual = AppDomain.CurrentDomain.BaseDirectory;
             //string caminho = Path.Combine(diretorioAtual, "Relatorio", nomeArquivo);
 
-            string caminho = "C:\\Users\\PC\\Documents\\AiderHubShippuden\\AiderHubAtual\\Relatorio\\MacroCertificadoa.xlsm";
+            string caminho = "C:\\Users\\PC\\Documents\\AiderHubShippuden\\AiderHubAtual\\Relatorio\\MacroCertificado.xlsm";
 
             Application xlApp = new Application();
-            Workbook xlWorkbook = null;
-            Worksheet ws = null;
+
+            if (xlApp == null)
+            {
+                ViewBag.Mensagem = "Erro ao executar a macro: aplicativo Excel não encontrado.";
+                return View("Relatorio");
+            }
+
+            Workbook xlWorkbook = xlApp.Workbooks.Open(caminho, ReadOnly: false);
 
             try
             {
-                xlWorkbook = xlApp.Workbooks.Open(caminho);
-                ws = (Worksheet)xlApp.ActiveSheet;
-
-                List<InscricaoData> inscricoes = ObterInscricoesPorEvento(id);
-
-                int startRow = 2; // Começando na linha 2 (exemplo)
-
-                for (int i = 0; i < inscricoes.Count; i++)
-                {
-                    var inscricao = inscricoes[i];
-
-                    ws.Cells[startRow + i, 1] = inscricao.idEvento;
-                    ws.Cells[startRow + i, 2] = inscricao.idVoluntario;
-                    ws.Cells[startRow + i, 3] = inscricao.NomeVoluntario;
-                    ws.Cells[startRow + i, 4] = inscricao.CargaHoraria;
-                    ws.Cells[startRow + i, 5] = inscricao.DataEvento;
-                    ws.Cells[startRow + i, 6] = inscricao.Ong;
-                }
-
-                xlWorkbook.Save();
-
-                try
-                {
-                    xlApp.Visible = false;
-                    xlApp.Run("GerarCertificado");
-                }
-                catch (Exception)
-                {
-                    ViewBag.Mensagem = "Erro ao executar a macro.";
-                }
+                xlApp.Visible = false;
+                xlApp.Run("GerarCertificado");
             }
-            catch (Exception ex)
+            catch (System.Exception)
             {
-                ViewBag.Mensagem = "Erro ao abrir o arquivo da planilha: " + ex.Message;
+                ViewBag.Mensagem = "Erro ao executar a macro.";
+                return View("Relatorio");
             }
-            finally
-            {
-                if (ws != null)
-                {
-                    Marshal.ReleaseComObject(ws);
-                }
-                if (xlWorkbook != null)
-                {
-                    xlWorkbook.Close();
-                    Marshal.ReleaseComObject(xlWorkbook);
-                }
-                if (xlApp != null)
-                {
-                    xlApp.Quit();
-                    Marshal.ReleaseComObject(xlApp);
-                }
-            }
-            return RedirectToAction("Inicial", "Home");
+
+            xlWorkbook.Close(false);
+            xlApp.Application.Quit();
+            xlApp.Quit();
+
+
+            ViewBag.Mensagem = "Arquivo gerado com sucesso!";
+            return View("Relatorio");
         }
 
-        public List<InscricaoData> ObterInscricoesPorEvento(int id)
-        {
-            List<InscricaoData> inscricoes = new List<InscricaoData>();
 
-            var evento = _context.Eventos.FirstOrDefault(e => e.Id_Evento == id);
-            if (evento != null)
-            {
-                var inscricoesEvento = _context.Inscricoes.Where(i => i.idEvento == id).ToList();
 
-                foreach (var inscricaoEvento in inscricoesEvento)
-                {
-                    var voluntario = _context.Voluntarios.FirstOrDefault(v => v.Id == inscricaoEvento.idVoluntario);
-                    if (voluntario != null)
-                    {
-                        var ong = _context.Ongs.FirstOrDefault(o => o.Id == evento.IdOng);
-                        if (ong != null)
-                        {
-                            var inscricao = new InscricaoData
-                            {
-                                idEvento = id,
-                                idVoluntario = inscricaoEvento.idVoluntario,
-                                NomeVoluntario = voluntario.Nome,
-                                CargaHoraria = evento.Carga_Horario,
-                                DataEvento = evento.data_Hora,
-                                Ong = ong.NomeFantasia
-                            };
+        //public async Task<IActionResult> EncerrarAsync(int id)
+        //{
+        //    //string nomeArquivo = "MacroCertificado.xlsm";
+        //    //string diretorioAtual = AppDomain.CurrentDomain.BaseDirectory;
+        //    //string caminho = Path.Combine(diretorioAtual, "Relatorio", nomeArquivo);
 
-                            inscricoes.Add(inscricao);
-                        }
-                    }
-                }
+        //    var evento = await _context.Eventos
+        //    .FirstOrDefaultAsync(e => e.Id_Evento == id);
 
-                return inscricoes;
-            }
-            return inscricoes;
-        }
+        //    if ((evento != null) && (evento.Status == false))
+        //    {
+        //        // Já existe uma inscrição com os mesmos valores, faça o tratamento necessário
+        //        ViewBag.Mensagem = "Esse evento já está encerrado!";
+        //        return RedirectToAction("Index", "Eventos"); // Redireciona para a página desejada
+        //    }
+        //}
+        //    string caminho = "C:\\Users\\PC\\Documents\\AiderHubShippuden\\AiderHubAtual\\Relatorio\\MacroCertificado.xlsm";
+
+        //    Application xlApp = new Application();
+        //    Workbook xlWorkbook = null;
+        //    Worksheet ws = null;
+
+        //    try
+        //    {
+        //        xlWorkbook = xlApp.Workbooks.Open(caminho);
+        //        ws = (Worksheet)xlApp.ActiveSheet;
+
+        //        List<InscricaoData> inscricoes = ObterInscricoesPorEvento(id);
+
+        //        int startRow = 2; // Começando na linha 2 (exemplo)
+
+        //        for (int i = 0; i < inscricoes.Count; i++)
+        //        {
+        //            var inscricao = inscricoes[i];
+
+        //            ws.Cells[startRow + i, 1] = inscricao.idEvento;
+        //            ws.Cells[startRow + i, 2] = inscricao.idVoluntario;
+        //            ws.Cells[startRow + i, 3] = inscricao.NomeVoluntario;
+        //            ws.Cells[startRow + i, 4] = inscricao.CargaHoraria;
+        //            ws.Cells[startRow + i, 5] = inscricao.DataEvento;
+        //            ws.Cells[startRow + i, 6] = inscricao.Ong;
+        //        }
+
+        //        xlWorkbook.Save();
+
+        //        try
+        //        {
+        //            xlApp.Visible = false;
+        //            xlApp.Run("GerarCertificado");
+        //        }
+        //        catch (Exception)
+        //        {
+        //            ViewBag.Mensagem = "Erro ao executar a macro.";
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ViewBag.Mensagem = "Erro ao abrir o arquivo da planilha: " + ex.Message;
+        //    }
+        //    finally
+        //    {
+        //        if (ws != null)
+        //        {
+        //            Marshal.ReleaseComObject(ws);
+        //        }
+        //        if (xlWorkbook != null)
+        //        {
+        //            xlWorkbook.Close();
+        //            Marshal.ReleaseComObject(xlWorkbook);
+        //        }
+        //        if (xlApp != null)
+        //        {
+        //            xlApp.Quit();
+        //            Marshal.ReleaseComObject(xlApp);
+        //        }
+        //    }
+        //    return RedirectToAction("Inicial", "Home");
+        //}
+
+        //public List<InscricaoData> ObterInscricoesPorEvento(int id)
+        //{
+        //    List<InscricaoData> inscricoes = new List<InscricaoData>();
+
+        //    var evento = _context.Eventos.FirstOrDefault(e => e.Id_Evento == id);
+        //    if (evento != null)
+        //    {
+        //        var inscricoesEvento = _context.Inscricoes.Where(i => i.idEvento == id).ToList();
+
+        //        foreach (var inscricaoEvento in inscricoesEvento)
+        //        {
+        //            var voluntario = _context.Voluntarios.FirstOrDefault(v => v.Id == inscricaoEvento.idVoluntario);
+        //            if (voluntario != null)
+        //            {
+        //                var ong = _context.Ongs.FirstOrDefault(o => o.Id == evento.IdOng);
+        //                if (ong != null)
+        //                {
+        //                    var inscricao = new InscricaoData
+        //                    {
+        //                        idEvento = id,
+        //                        idVoluntario = inscricaoEvento.idVoluntario,
+        //                        NomeVoluntario = voluntario.Nome,
+        //                        CargaHoraria = evento.Carga_Horario,
+        //                        DataEvento = evento.data_Hora,
+        //                        Ong = ong.NomeFantasia
+        //                    };
+
+        //                    inscricoes.Add(inscricao);
+        //                }
+        //            }
+        //        }
+
+        //        return inscricoes;
+        //    }
+        //    return inscricoes;
+        //}
     }
 }

@@ -74,9 +74,9 @@ namespace AiderHubAtual.Controllers
                 var usuarioController = new UsuariosController(_context);
                 await usuarioController.Create(usuario);
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Inicial", "Home");
             }
-            return View(ong);
+            return View("Inicial", "Home");
         }
 
         // GET: Ongs/Edit/5

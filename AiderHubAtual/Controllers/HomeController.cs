@@ -21,7 +21,7 @@ namespace AiderHubAtual.Controllers
         public ActionResult Inicial()
         {
             int? idUser = HttpContext.Session.GetInt32("IdUser");
-            string userTipo = HttpContext.Session.GetString("userTipo");
+            string userTipo = HttpContext.Session.GetString("IdTipo");
 
             if (idUser.HasValue && !string.IsNullOrEmpty(userTipo))
             {
@@ -126,7 +126,7 @@ namespace AiderHubAtual.Controllers
 
             double distanceInMeters = CalculateDistance(parsedDeviceLatitude, parsedDeviceLongitude, parsedDataBaselatitude, parsedDataBaselongitude);
 
-            if (distanceInMeters <= 34000)
+            if (distanceInMeters <= 4000)
             {
                 ViewBag.resultado = "DENTRO DO RAIO, CHECK-IN REALIZADO COM SUCESSO!";
                 ViewBag.coordenadas = $"{parsedDeviceLatitude}, {parsedDeviceLongitude}";
@@ -140,6 +140,35 @@ namespace AiderHubAtual.Controllers
                     _context.SaveChanges();
 
                     return Ok();
+                }
+
+                var evento = _context.Eventos.FirstOrDefault(e => e.Id_Evento == idEvento);
+                if (evento != null)
+                {
+                    var inscricoesEvento = _context.Inscricoes.Where(i => i.idEvento == idEvento).ToList();
+
+                    foreach (var inscricaoEvento in inscricoesEvento)
+                    {
+                        var voluntario = _context.Voluntarios.FirstOrDefault(v => v.Id == inscricaoEvento.idVoluntario);
+                        if (voluntario != null)
+                        {
+                            var ong = _context.Ongs.FirstOrDefault(o => o.Id == evento.IdOng);
+                            if (ong != null)
+                            {
+                                var relatorio = new Relatorio
+                                {
+                                    IdEvento = idEvento,
+                                    IdVoluntario = inscricaoEvento.idVoluntario,
+                                    NomeVoluntario = voluntario.Nome,
+                                    CargaHoraria = evento.Carga_Horario,
+                                    DataEvento = evento.data_Hora,
+                                    NomeONG = ong.NomeFantasia
+                                };
+
+                                _context.Relatorios.Add(relatorio);
+                            }
+                        }
+                    }
                 }
 
                 return RedirectToAction("Validar", new { result = ViewBag.resultado, coordinate = ViewBag.coordenadas, distance = ViewBag.distancia });
@@ -188,46 +217,7 @@ namespace AiderHubAtual.Controllers
             return RedirectToAction("LoginPage", "Usuarios");
         }
 
-        /*[HttpPost]
-        public ActionResult ExecutaMacro()
-        {
-            string nomeArquivo = "MacroCertificado.xlsm";
-            string diretorioAtual = AppDomain.CurrentDomain.BaseDirectory;
-            string caminho = Path.Combine(diretorioAtual, "Relatorio", nomeArquivo);
-
-            //string caminho = "C:\\Users\\Feguti\\source\\repos\\AHub\\AiderHubAtual\\Relatorio\\MacroCertificado.xlsm";
-
-            Application xlApp = new Application();
-
-            if (xlApp == null)
-            {
-                ViewBag.Mensagem = "Erro ao executar a macro: aplicativo Excel não encontrado.";
-                return View("Relatorio");
-            }
-
-            Workbook xlWorkbook = xlApp.Workbooks.Open(caminho, ReadOnly: false);
-
-            try
-            {
-                xlApp.Visible = false;
-                xlApp.Run("GerarCertificado");
-            }
-            catch (System.Exception)
-            {
-                ViewBag.Mensagem = "Erro ao executar a macro.";
-                return View("Relatorio");
-            }
-
-            xlWorkbook.Close(false);
-            xlApp.Application.Quit();
-            xlApp.Quit();
-
-
-            ViewBag.Mensagem = "Arquivo gerado com sucesso!";
-            return View("Relatorio");
-        }
-
-        public ActionResult Relatorio()
+        /*public ActionResult Relatorio()
         {
             return View();
         }
