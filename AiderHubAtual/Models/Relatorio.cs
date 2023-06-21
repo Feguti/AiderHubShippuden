@@ -7,6 +7,9 @@ namespace AiderHubAtual.Models
     [Table("relatorio")]
     public class Relatorio
     {
+        [Key]
+        [Column("id")]
+        public int Id { get; set; }
         [Column("id_evento")]
         public int IdEvento { get; set; }
         [Column("id_voluntario")]
@@ -22,8 +25,9 @@ namespace AiderHubAtual.Models
 
 
         public Relatorio() { }
-        public Relatorio(int id_evento, int id_voluntario, string nome_voluntario, string nome_ong, DateTime data_evento, TimeSpan carga_horaria)
+        public Relatorio(int id, int id_evento, int id_voluntario, string nome_voluntario, string nome_ong, DateTime data_evento, TimeSpan carga_horaria)
         {
+            Id = id;
             IdEvento = id_evento;
             IdVoluntario = id_voluntario;
             NomeVoluntario = nome_voluntario;

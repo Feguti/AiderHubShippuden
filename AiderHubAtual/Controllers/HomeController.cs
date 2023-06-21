@@ -4,6 +4,7 @@ using System;
 using AiderHubAtual.Models;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
+using System.Threading.Tasks;
 
 namespace AiderHubAtual.Controllers
 {
@@ -87,7 +88,7 @@ namespace AiderHubAtual.Controllers
                     databaseLongitude = ViewBag.Longitude,
                     deviceLatitude,
                     deviceLongitude,
-                   idEvento
+                    idEvento
                 });
                 //return View();
                 // return RedirectToAction("Device", new { databaseLat = ViewBag.Latitude, databaseLone = ViewBag.Longitude });
@@ -108,7 +109,7 @@ namespace AiderHubAtual.Controllers
 
         [HttpGet]
         [HttpPost]
-        public ActionResult Resultado(string databaseLatitude, string databaseLongitude, string deviceLatitude, string deviceLongitude, int idEvento)
+        public async Task<ActionResult> ResultadoAsync(string databaseLatitude, string databaseLongitude, string deviceLatitude, string deviceLongitude, int idEvento)
         {
             int idUser = HttpContext.Session.GetInt32("IdUser") ?? 0;
             double parsedDeviceLatitude = double.Parse(deviceLatitude, CultureInfo.InvariantCulture);
@@ -138,8 +139,6 @@ namespace AiderHubAtual.Controllers
                 {
                     inscricao.Confirmacao = true;
                     _context.SaveChanges();
-
-                    return Ok();
                 }
 
                 var evento = _context.Eventos.FirstOrDefault(e => e.Id_Evento == idEvento);
@@ -147,30 +146,30 @@ namespace AiderHubAtual.Controllers
                 {
                     var inscricoesEvento = _context.Inscricoes.Where(i => i.idEvento == idEvento).ToList();
 
-                    foreach (var inscricaoEvento in inscricoesEvento)
+                    var voluntario = _context.Voluntarios.FirstOrDefault(v => v.Id == idUser);
+                    if (voluntario != null)
                     {
-                        var voluntario = _context.Voluntarios.FirstOrDefault(v => v.Id == inscricaoEvento.idVoluntario);
-                        if (voluntario != null)
+                        var ong = _context.Ongs.FirstOrDefault(o => o.Id == evento.IdOng);
+                        if (ong != null)
                         {
-                            var ong = _context.Ongs.FirstOrDefault(o => o.Id == evento.IdOng);
-                            if (ong != null)
+                            Relatorio relatorio = new Relatorio
                             {
-                                var relatorio = new Relatorio
-                                {
-                                    IdEvento = idEvento,
-                                    IdVoluntario = inscricaoEvento.idVoluntario,
-                                    NomeVoluntario = voluntario.Nome,
-                                    CargaHoraria = evento.Carga_Horario,
-                                    DataEvento = evento.data_Hora,
-                                    NomeONG = ong.NomeFantasia
-                                };
+                                IdEvento = idEvento,
+                                IdVoluntario = voluntario.Id,
+                                NomeVoluntario = voluntario.Nome,
+                                CargaHoraria = evento.Carga_Horario,
+                                DataEvento = evento.data_Hora,
+                                NomeONG = ong.NomeFantasia
+                            };
 
-                                _context.Relatorios.Add(relatorio);
-                            }
+                            //var relatorioController = new RelatoriosController(_context);
+                            //await relatorioController.Create(relatorio);
+
+                            return RedirectToAction("Validar", new { result = ViewBag.resultado, coordinate = ViewBag.coordenadas, distance = ViewBag.distancia });
                         }
                     }
-                }
 
+                }
                 return RedirectToAction("Validar", new { result = ViewBag.resultado, coordinate = ViewBag.coordenadas, distance = ViewBag.distancia });
             }
             else

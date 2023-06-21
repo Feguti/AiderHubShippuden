@@ -49,14 +49,14 @@ namespace AiderHubAtual.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdEvento, IdVoluntario, NomeVoluntario, NomeONG, DataEvento, CargaHoraria")] Relatorio relatorio)
+        public async Task<IActionResult> Create([Bind("Id, IdEvento, IdVoluntario, NomeVoluntario, NomeONG, DataEvento, CargaHoraria")] Relatorio relatorio)
         {
             if (ModelState.IsValid)
             {
                 _context.Add(relatorio);
                 await _context.SaveChangesAsync();
+                return RedirectToAction("Validar","Home", new { result = ViewBag.resultado, coordinate = ViewBag.coordenadas, distance = ViewBag.distancia });
 
-                return RedirectToAction("Sucesso");
             }
 
             return View(relatorio);

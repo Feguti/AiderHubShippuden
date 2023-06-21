@@ -7,9 +7,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using AiderHubAtual.Models;
 using Microsoft.AspNetCore.Http;
-using System.IO;
-using Microsoft.Office.Interop.Excel;
-using System.Runtime.InteropServices;
 
 namespace AiderHubAtual.Controllers
 {
@@ -39,6 +36,13 @@ namespace AiderHubAtual.Controllers
                 .ToListAsync();
 
             return View(eventos);
+        }
+
+
+        public IActionResult Inscricao(string result)
+        {
+            ViewBag.Mensagem = result;
+            return View();
         }
         // GET: Eventos/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -221,9 +225,23 @@ namespace AiderHubAtual.Controllers
             return View("Inscricao");
         }
 
+        public async Task<IActionResult> Encerrar(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-        [HttpPost]
-        public async Task<ActionResult> EncerrarAsync(int id)
+            var evento = await _context.Eventos
+                .FirstOrDefaultAsync(m => m.Id_Evento == id);
+            if (evento == null)
+            {
+                return NotFound();
+            }
+
+            return RedirectToAction("EncerrarEvento", new { id });
+        }
+        public async Task<IActionResult> EncerrarEvento(int id)
         {
 
             var evento = await _context.Eventos
@@ -231,46 +249,53 @@ namespace AiderHubAtual.Controllers
 
             if ((evento != null) && (evento.Status == false))
             {
-                // Já existe uma inscrição com os mesmos valores, faça o tratamento necessário
                 ViewBag.Mensagem = "Esse evento já está encerrado!";
-                return RedirectToAction("Index", "Eventos"); // Redireciona para a página desejada
+                return RedirectToAction("Inscricao", "Eventos", new { result = ViewBag.Mensagem });
             }
-
-            //string nomeArquivo = "MacroCertificado.xlsm";
-            //string diretorioAtual = AppDomain.CurrentDomain.BaseDirectory;
-            //string caminho = Path.Combine(diretorioAtual, "Relatorio", nomeArquivo);
-
-            string caminho = "C:\\Users\\PC\\Documents\\AiderHubShippuden\\AiderHubAtual\\Relatorio\\MacroCertificado.xlsm";
-
-            Application xlApp = new Application();
-
-            if (xlApp == null)
+            else
             {
-                ViewBag.Mensagem = "Erro ao executar a macro: aplicativo Excel não encontrado.";
-                return View("Relatorio");
+                evento.Status = false;
+                _context.SaveChanges();
+
             }
 
-            Workbook xlWorkbook = xlApp.Workbooks.Open(caminho, ReadOnly: false);
-
-            try
-            {
-                xlApp.Visible = false;
-                xlApp.Run("GerarCertificado");
-            }
-            catch (System.Exception)
-            {
-                ViewBag.Mensagem = "Erro ao executar a macro.";
-                return View("Relatorio");
-            }
-
-            xlWorkbook.Close(false);
-            xlApp.Application.Quit();
-            xlApp.Quit();
-
-
-            ViewBag.Mensagem = "Arquivo gerado com sucesso!";
-            return View("Relatorio");
+            return RedirectToAction("Index", "Eventos");
         }
+        //    //string nomeArquivo = "MacroCertificado.xlsm";
+        //    //string diretorioAtual = AppDomain.CurrentDomain.BaseDirectory;
+        //    //string caminho = Path.Combine(diretorioAtual, "Relatorio", nomeArquivo);
+
+        //    string caminho = "C:\\Users\\PC\\Documents\\AiderHubShippuden\\AiderHubAtual\\Relatorio\\MacroCertificado.xlsm";
+
+        //    Application xlApp = new Application();
+
+        //    if (xlApp == null)
+        //    {
+        //        ViewBag.Mensagem = "Erro ao executar a macro: aplicativo Excel não encontrado.";
+        //        return View("Relatorio");
+        //    }
+
+        //    Workbook xlWorkbook = xlApp.Workbooks.Open(caminho, ReadOnly: false);
+
+        //    try
+        //    {
+        //        xlApp.Visible = false;
+        //        xlApp.Run("GerarCertificado");
+        //    }
+        //    catch (System.Exception)
+        //    {
+        //        ViewBag.Mensagem = "Erro ao executar a macro.";
+        //        return View("Relatorio");
+        //    }
+
+        //    xlWorkbook.Close(false);
+        //    xlApp.Application.Quit();
+        //    xlApp.Quit();
+
+
+        //    ViewBag.Mensagem = "Arquivo gerado com sucesso!";
+        //    return View("Relatorio");
+        //}
 
 
 
