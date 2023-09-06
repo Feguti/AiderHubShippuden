@@ -6,7 +6,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.Http;
+
 
 namespace AiderHubAtual.Controllers
 {

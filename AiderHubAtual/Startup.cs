@@ -15,6 +15,8 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Options;
 using System.Globalization;
 using System.Reflection;
+using System.IO;
+using Microsoft.AspNetCore.Http;
 
 namespace AiderHubAtual
 {
@@ -107,9 +109,15 @@ namespace AiderHubAtual
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Usuarios}/{action=LoginPage}/{id?}");
+               // Adicione a rota para a sua página HTML (certifique-se de que o caminho do arquivo esteja correto)
+        endpoints.MapGet("/", async context =>
+        {
+            await context.Response.SendFileAsync(Path.Combine(env.WebRootPath, "landingpage.html"));
+        });
+
+        endpoints.MapControllerRoute(
+            name: "default",
+            pattern: "{controller=Usuarios}/{action=LoginPage}/{id?}");
             });
         }
     }
