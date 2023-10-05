@@ -53,15 +53,30 @@ namespace AiderHubAtual.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,RazaoSocial,NomeFantasia,Cnpj,AssinaturaDigital,Endereco,Telefone,Foto,Historico,ProximosEventos,Tipo,Usuario")] Ong ong)
+        public async Task<IActionResult> Create([Bind("Id,RazaoSocial,NomeFantasia,Cnpj,Email,Senha,AssinaturaDigital,Telefone,Endereco,FotoLogo,Tipo")] Ong ong)
         {
             if (ModelState.IsValid)
             {
+                ong.Tipo = "O";
                 _context.Add(ong);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+
+                Usuario usuario = new Usuario
+                {
+                    Id = ong.Id,
+                    Email = ong.Email,
+                    Senha = ong.Senha,
+                    Tipo = "O",
+                    Status = true
+                };
+
+                //await CreateUsuarioAsync(usuario);
+                var usuarioController = new UsuariosController(_context);
+                await usuarioController.Create(usuario);
+
+                return RedirectToAction("Inicial", "Home");
             }
-            return View(ong);
+            return View("Inicial", "Home");
         }
 
         // GET: Ongs/Edit/5
@@ -85,7 +100,7 @@ namespace AiderHubAtual.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,RazaoSocial,NomeFantasia,Cnpj,AssinaturaDigital,Endereco,Telefone,Foto,Historico,ProximosEventos,Tipo")] Ong ong)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,RazaoSocial,NomeFantasia,Cnpj,Email,Senha,AssinaturaDigital,Telefone,Endereco,FotoLogo,Tipo")] Ong ong)
         {
             if (id != ong.Id)
             {

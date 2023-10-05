@@ -16,10 +16,19 @@
                 @Html.DisplayNameFor(model => model.Nome)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.Foto)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.DataNascimento)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Cpf)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Telefone)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Endereco)
@@ -33,21 +42,6 @@
             <th>
                 @Html.DisplayNameFor(model => model.Interesses)
             </th>
-            @*<th>
-                @Html.DisplayNameFor(model => model.Historico)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ProximosEventos)
-            </th>*@
-            <th>
-                @Html.DisplayNameFor(model => model.Telefone)
-            </th>
-            @*<th>
-                @Html.DisplayNameFor(model => model.Foto)
-            </th>*@
-            @*<th>
-                @Html.DisplayNameFor(model => model.Tipo)
-            </th>*@
             <th></th>
         </tr>
     </thead>
@@ -58,10 +52,19 @@
                 @Html.DisplayFor(modelItem => item.Nome)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.Foto)
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.DataNascimento)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Cpf)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Telefone)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Endereco)
@@ -75,21 +78,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Interesses)
             </td>
-            @*<td>
-                @Html.DisplayFor(modelItem => item.Historico)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ProximosEventos)
-            </td>*@
-            <td>
-                @Html.DisplayFor(modelItem => item.Telefone)
-            </td>
-            @*<td>
-                @Html.DisplayFor(modelItem => item.Foto)
-            </td>*@
-            @*<td>
-                @Html.DisplayNameFor(model => model.Tipo)
-            </td>*@
+
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |

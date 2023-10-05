@@ -1,8 +1,12 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿@model AiderHubAtual.Controllers.HomeController
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+@inject LanguageService language
+
+@if ((bool)ViewBag.VoluntarioLogado == true)
+{
+    Layout = "_LayoutVoluntario";
+}
+else
+{
+    Layout = "_LayoutOng";
+}

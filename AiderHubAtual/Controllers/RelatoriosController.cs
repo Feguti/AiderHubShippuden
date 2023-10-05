@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using AiderHubAtual.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using AiderHubAtual.Models;
-//using Microsoft.Office.Interop.Excel;
+using System.Threading.Tasks;
 
 namespace AiderHubAtual.Controllers
 {
@@ -18,136 +13,95 @@ namespace AiderHubAtual.Controllers
         {
             _context = context;
         }
-
-        // GET: Relatorios
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Relatorios.ToListAsync());
-        }
-
-        // GET: Relatorios/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var relatorio = await _context.Relatorios
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (relatorio == null)
-            {
-                return NotFound();
-            }
-
-            return View(relatorio);
-        }
-
-        // GET: Relatorios/Create
-        public IActionResult Create()
+        // GET: RelatoriosController
+        public ActionResult Index()
         {
             return View();
         }
 
-        // POST: Relatorios/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // GET: RelatoriosController/Details/5
+        public ActionResult Details(int id)
+        {
+            return View();
+        }
+
+        // GET: RelatoriosController/Create
+        public ActionResult Create()
+        {
+            return View();
+        }
+
+        //// POST: RelatoriosController/Create
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult Create(IFormCollection collection)
+        //{
+        //    try
+        //    {
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    catch
+        //    {
+        //        return View();
+        //    }
+        //}
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Foto,idVoluntario,idEvento,RelatorioGerado,DataGeracao")] Relatorio relatorio)
+        public async Task<IActionResult> Create([Bind("Id, IdEvento, IdVoluntario, NomeVoluntario, NomeONG, DataEvento, CargaHoraria")] Relatorio relatorio)
         {
             if (ModelState.IsValid)
             {
                 _context.Add(relatorio);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Validar","Home", new { result = ViewBag.resultado, coordinate = ViewBag.coordenadas, distance = ViewBag.distancia });
+
             }
+
             return View(relatorio);
         }
 
-        // GET: Relatorios/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        // GET: RelatoriosController/Edit/5
+        public ActionResult Edit(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var relatorio = await _context.Relatorios.FindAsync(id);
-            if (relatorio == null)
-            {
-                return NotFound();
-            }
-            return View(relatorio);
+            return View();
         }
 
-        // POST: Relatorios/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: RelatoriosController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Foto,idVoluntario,idEvento,RelatorioGerado,DataGeracao")] Relatorio relatorio)
+        public ActionResult Edit(int id, IFormCollection collection)
         {
-            if (id != relatorio.Id)
+            try
             {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(relatorio);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!RelatorioExists(relatorio.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
                 return RedirectToAction(nameof(Index));
             }
-            return View(relatorio);
+            catch
+            {
+                return View();
+            }
         }
 
-        // GET: Relatorios/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // GET: RelatoriosController/Delete/5
+        public ActionResult Delete(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var relatorio = await _context.Relatorios
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (relatorio == null)
-            {
-                return NotFound();
-            }
-
-            return View(relatorio);
+            return View();
         }
 
-        // POST: Relatorios/Delete/5
-        [HttpPost, ActionName("Delete")]
+        // POST: RelatoriosController/Delete/5
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public ActionResult Delete(int id, IFormCollection collection)
         {
-            var relatorio = await _context.Relatorios.FindAsync(id);
-            _context.Relatorios.Remove(relatorio);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool RelatorioExists(int id)
-        {
-            return _context.Relatorios.Any(e => e.Id == id);
+            try
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            catch
+            {
+                return View();
+            }
         }
     }
 }

@@ -1,30 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using AiderHubAtual.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using AiderHubAtual.Models;
 
 namespace AiderHubAtual.Controllers
 {
-    public class CalendariosController : Controller
+    public class InscricoesController : Controller
     {
         private readonly Context _context;
 
-        public CalendariosController(Context context)
+        public InscricoesController(Context context)
         {
             _context = context;
         }
 
-        // GET: Calendarios
+        // GET: Inscricoes
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Calendarios.ToListAsync());
+            int idUser = HttpContext.Session.GetInt32("IdUser") ?? 0;
+
+            // Filtrar as inscrições pelo valor de idVoluntario
+            var inscricoes = await _context.Inscricoes
+                .Where(i => i.idVoluntario == idUser)
+                .ToListAsync();
+
+            return View(inscricoes);
         }
 
-        // GET: Calendarios/Details/5
+
+        // GET: Inscricoes/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -32,39 +38,38 @@ namespace AiderHubAtual.Controllers
                 return NotFound();
             }
 
-            var calendario = await _context.Calendarios
+            var inscricao = await _context.Inscricoes
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (calendario == null)
+            if (inscricao == null)
             {
                 return NotFound();
             }
 
-            return View(calendario);
+            return View(inscricao);
         }
 
-        // GET: Calendarios/Create
+        // GET: Inscricoes/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Calendarios/Create
+        // POST: Inscricoes/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nome,DataHora,CargaHoraria,Descricao,Cep,Endereco,Logradouro,Complemento,Bairro,Cidade,Uf,EventosMarcados")] Calendario calendario)
+        public async Task<IActionResult> Create([Bind("Id,idEvento,idVoluntario,Status,Tipo,Confirmacao,DataInscricao")] Inscricao inscricao)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(calendario);
+                _context.Add(inscricao);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
             }
-            return View(calendario);
+            return View(inscricao);
         }
 
-        // GET: Calendarios/Edit/5
+        // GET: Inscricoes/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -72,22 +77,20 @@ namespace AiderHubAtual.Controllers
                 return NotFound();
             }
 
-            var calendario = await _context.Calendarios.FindAsync(id);
-            if (calendario == null)
+            var inscricao = await _context.Inscricoes.FindAsync(id);
+            if (inscricao == null)
             {
                 return NotFound();
             }
-            return View(calendario);
+            return View(inscricao);
         }
 
-        // POST: Calendarios/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,DataHora,CargaHoraria,Descricao,Cep,Endereco,Logradouro,Complemento,Bairro,Cidade,Uf,EventosMarcados")] Calendario calendario)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,idEvento,idVoluntario,Status,Tipo,Confirmacao,DataInscricao")] Inscricao inscricao)
         {
-            if (id != calendario.Id)
+
+            if (id != inscricao.Id)
             {
                 return NotFound();
             }
@@ -96,12 +99,12 @@ namespace AiderHubAtual.Controllers
             {
                 try
                 {
-                    _context.Update(calendario);
+                    _context.Update(inscricao);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CalendarioExists(calendario.Id))
+                    if (!InscricaoExists(inscricao.Id))
                     {
                         return NotFound();
                     }
@@ -112,10 +115,10 @@ namespace AiderHubAtual.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(calendario);
+            return View(inscricao);
         }
 
-        // GET: Calendarios/Delete/5
+        // GET: Inscricoes/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -123,30 +126,30 @@ namespace AiderHubAtual.Controllers
                 return NotFound();
             }
 
-            var calendario = await _context.Calendarios
+            var inscricao = await _context.Inscricoes
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (calendario == null)
+            if (inscricao == null)
             {
                 return NotFound();
             }
 
-            return View(calendario);
+            return View(inscricao);
         }
 
-        // POST: Calendarios/Delete/5
+        // POST: Inscricoes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var calendario = await _context.Calendarios.FindAsync(id);
-            _context.Calendarios.Remove(calendario);
+            var inscricao = await _context.Inscricoes.FindAsync(id);
+            _context.Inscricoes.Remove(inscricao);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CalendarioExists(int id)
+        private bool InscricaoExists(int id)
         {
-            return _context.Calendarios.Any(e => e.Id == id);
+            return _context.Inscricoes.Any(e => e.Id == id);
         }
     }
 }

@@ -11,6 +11,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.Extensions.Options;
+using System.Globalization;
+using System.Reflection;
 
 namespace AiderHubAtual
 {
@@ -27,6 +31,36 @@ namespace AiderHubAtual
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+
+            services.AddSingleton<LanguageService>();
+            services.AddLocalization(options => options.ResourcesPath = "Resources");
+
+            services.AddMvc()
+                .AddViewLocalization()
+                .AddDataAnnotationsLocalization(options =>
+                {
+                    options.DataAnnotationLocalizerProvider = (type, factory) =>
+                    {
+                        var assemblyName = new AssemblyName(typeof(ShareResource).GetTypeInfo().Assembly.FullName);
+                        return factory.Create("ShareResource", assemblyName.Name);
+                    };
+                });
+
+            services.Configure<RequestLocalizationOptions>(
+                options =>
+                {
+                    var supportedCultures = new List<CultureInfo>
+                    {
+                        new CultureInfo ("en-US"),
+                        new CultureInfo ("pt-BR"),
+                    };
+                    options.DefaultRequestCulture = new RequestCulture(culture: "pt-BR", uiCulture: "pt-BR");
+                    options.SupportedCultures = supportedCultures;
+                    options.SupportedUICultures = supportedCultures;
+                    options.RequestCultureProviders.Insert(0, new QueryStringRequestCultureProvider());
+                });
+
+
             //var connectionString = Configuration["ConnectionStrings:ConnAider"];
 
             //var builder = new NpgsqlConnectionStringBuilder(connectionString);
@@ -35,6 +69,12 @@ namespace AiderHubAtual
 
             services.AddDbContext<Context>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("ConnAider")));
+            services.AddDistributedMemoryCache();
+            services.AddSession(options =>
+            {
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
 
         }
 
@@ -52,6 +92,10 @@ namespace AiderHubAtual
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            var locOptions = app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>();
+            app.UseRequestLocalization(locOptions.Value);
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
@@ -59,11 +103,13 @@ namespace AiderHubAtual
 
             app.UseAuthorization();
 
+            app.UseSession();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Usuarios}/{action=LoginPage}/{id?}");
             });
         }
     }

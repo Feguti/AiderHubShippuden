@@ -1,4 +1,4 @@
-﻿@model AiderHubAtual.Models.Relatorio
+﻿@model AiderHubAtual.Models.Inscricao
 
 @{
     ViewData["Title"] = "Delete";
@@ -8,14 +8,14 @@
 
 <h3>Are you sure you want to delete this?</h3>
 <div>
-    <h4>Relatorio</h4>
+    <h4>Inscricao</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Foto)
+            @Html.DisplayNameFor(model => model.idEvento)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Foto)
+            @Html.DisplayFor(model => model.idEvento)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.idVoluntario)
@@ -24,22 +24,28 @@
             @Html.DisplayFor(model => model.idVoluntario)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.idEvento)
+            @Html.DisplayNameFor(model => model.Status)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.idEvento)
+            @Html.DisplayFor(model => model.Status)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.RelatorioGerado)
+            @Html.DisplayNameFor(model => model.Tipo)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.RelatorioGerado)
+            @Html.DisplayFor(model => model.Tipo)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DataGeracao)
+            @Html.DisplayNameFor(model => model.Confirmacao)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DataGeracao)
+            @Html.DisplayFor(model => model.Confirmacao)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.DataInscricao)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.DataInscricao)
         </dd>
     </dl>
     

@@ -19,29 +19,36 @@ namespace AiderHubAtual.Models
         public string NomeFantasia { get; set; }
         [Column("cnpj")]
         public string Cnpj { get; set; }
-        [Column("assinatura_digital")]        
-        public byte AssinaturaDigital { get; set; }
-        [Column("endereco")]        
-        public string Endereco { get; set; }
+        [Column("email")]
+        public string Email { get; set; }
+        [Column("senha")]
+        public string Senha { get; set; }
+        [Column("assinatura_digital")]
+        public byte[] AssinaturaDigital { get; set; }
         [Column("telefone")]
         public string Telefone { get; set; }
+        [Column("endereco")]
+        public string Endereco { get; set; }
         [Column("foto_logo")]
-        public byte Foto { get; set; }
-        [Column("historico_eventos")]
-        public string Historico { get; set; }   
-        [Column("proximos_eventos")]
-        public string ProximosEventos { get; set; }
+        public string FotoLogo { get; set; }
         [Column("tipo")]
-        public char Tipo { get; set; }
-        [Column("usuario")]
-        public int Usuario { get; set; }
-
+        public string Tipo { get; set; }
 
         public Ong() { }
 
-        public Ong(int id_ong, string RazaoSocial, string NomeFantasia, string Cnpj, byte AssinaturaDigital, string Endereco, string Telefone, byte Foto, string Historico, string ProximosEventos, char Tipo, int Usuario)
+        public Ong(int id_ong, string razao_social, string nome_fantasia, string cnpj, string email, string senha, byte[] assinatura_digital, string telefone, string endereco, string foto_logo, string tipo)
         {
-
+            Id = id_ong;
+            RazaoSocial = razao_social;
+            NomeFantasia = nome_fantasia;
+            Cnpj = cnpj;
+            Email = email;
+            Senha = senha;
+            AssinaturaDigital = assinatura_digital;
+            Telefone = telefone;
+            Endereco = endereco;
+            FotoLogo = foto_logo;
+            Tipo = tipo;
         }
     }
 }

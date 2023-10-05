@@ -10,7 +10,6 @@ namespace AiderHubAtual.Models
     [Table("usuario")]
     public class Usuario
     {
-        [Key]
         [Column("id_usuario")]
         public int Id { get; set; }
         [Column("email")]
@@ -19,12 +18,18 @@ namespace AiderHubAtual.Models
         public string Senha { get; set;}
         [Column("status")]
         public bool Status { get; set;}
+        [Column("tipo")]
+        public string Tipo { get; set; }
 
         public Usuario() { }
 
-        public Usuario(int Id, string Email, string  Senha, bool Status)
+        public Usuario(int id, string email, string  senha, bool status, string tipo)
         {
-
+            Id = id;
+            Email = email;
+            Senha = senha;
+            Status = status;
+            Tipo = tipo;
         }
     }
 }

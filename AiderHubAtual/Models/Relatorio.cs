@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace AiderHubAtual.Models
 {
@@ -11,24 +8,33 @@ namespace AiderHubAtual.Models
     public class Relatorio
     {
         [Key]
-        [Column("id_relatorio")]
+        [Column("id")]
         public int Id { get; set; }
-        [Column("foto_logo")]
-        public byte Foto { get; set; }
-        [Column("id_voluntario")]
-        public int idVoluntario { get; set; }
         [Column("id_evento")]
-        public int idEvento { get; set; }
-        [Column("relatorio_gerado")]
-        public bool RelatorioGerado { get; set; }
-        [Column("data_geracao")]
-        public TimeSpan DataGeracao { get; set; }
+        public int IdEvento { get; set; }
+        [Column("id_voluntario")]
+        public int IdVoluntario { get; set; }
+        [Column("nome_voluntario")]
+        public string NomeVoluntario { get; set; }
+        [Column("nome_ong")]
+        public string NomeONG { get; set; }
+        [Column("data_evento")]
+        public DateTime DataEvento { get; set; }
+        [Column("carga_horaria")]
+        public TimeSpan CargaHoraria { get; set; }
+
 
         public Relatorio() { }
-
-        public Relatorio(int Id, byte Foto, int idVoluntario, int idEvento, bool RelatorioGerado, TimeSpan DataGeracao)
+        public Relatorio(int id, int id_evento, int id_voluntario, string nome_voluntario, string nome_ong, DateTime data_evento, TimeSpan carga_horaria)
         {
-
+            Id = id;
+            IdEvento = id_evento;
+            IdVoluntario = id_voluntario;
+            NomeVoluntario = nome_voluntario;
+            NomeONG = nome_ong;
+            DataEvento = data_evento;
+            CargaHoraria = carga_horaria;
         }
     }
+
 }
